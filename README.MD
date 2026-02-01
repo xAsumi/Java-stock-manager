@@ -1,7 +1,7 @@
 # Java Stock Management System
 
-**Author:** Rami ELAMRI
-**University:** EMSI (École Marocaine des Sciences de l'Ingénieur)
+**Author:** Rami 
+
 
 ## 📋 Project Overview
 This project is a desktop application designed to manage the inventory of a multimedia store. It allows for the tracking of various products (Books, DVDs, Video Games) using a **Polymorphic** architecture and persists all data in a **MySQL** database.
