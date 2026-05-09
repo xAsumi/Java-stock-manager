@@ -132,7 +132,7 @@ public class Magasin {
                 if (parsed >= 0 && !Double.isInfinite(parsed) && !Double.isNaN(parsed)) {
                     return parsed;
                 }
-            } catch (NumberFormatException ignored) {
+            } catch (NumberFormatException e) {
             }
             System.out.println("Prix invalide. Entrez un nombre >= 0.");
         }

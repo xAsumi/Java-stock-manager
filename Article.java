@@ -25,6 +25,11 @@ public abstract class Article implements Serializable {
         return prix;
     }
 
+    @Deprecated
+    public double getPrixLocation() {
+        return getPrix();
+    }
+
     public abstract String getType();
 
     public String getDisplayType() {

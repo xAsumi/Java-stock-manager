@@ -43,7 +43,7 @@ public class MagasinDB {
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Erreur DB (save): " + e.getMessage());
+            System.err.println("Erreur DB (save) [" + article.getType() + " - " + article.getTitre() + "]: " + e.getMessage());
         }
     }
 
@@ -74,7 +74,7 @@ public class MagasinDB {
         } catch (SQLException e) {
             System.err.println("Erreur DB (load): " + e.getMessage());
         } catch (RuntimeException e) {
-            System.err.println("Donnée invalide ignorée: " + e.getMessage());
+            System.err.println("Donnée invalide ignorée pendant le chargement d'un article: " + e.getMessage());
         }
         return list;
     }
