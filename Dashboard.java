@@ -39,50 +39,35 @@ public class Dashboard extends JFrame {
         btnLivre.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String titre = JOptionPane.showInputDialog("Titre du Livre:");
+                String titre = promptRequiredText("Titre du Livre:");
+                if (titre == null) return;
                 String auteur = JOptionPane.showInputDialog("Auteur:");
-                String prix = JOptionPane.showInputDialog("Prix:");
-                if (titre != null && prix != null) {
-                    try {
-                        Livre l = new Livre(titre, auteur, Double.parseDouble(prix));
-                        MagasinDB.save(l);
-                        refreshTable();
-                    } catch (Exception ex) {
-                    }
-                }
+                Double prix = promptPrice("Prix:");
+                if (prix == null) return;
+                addArticleSafely(new Livre(titre, auteur, prix));
             }
         });
 
         btnJeu.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String titre = JOptionPane.showInputDialog("Titre du Jeu:");
+                String titre = promptRequiredText("Titre du Jeu:");
+                if (titre == null) return;
                 String console = JOptionPane.showInputDialog("Console:");
-                String prix = JOptionPane.showInputDialog("Prix:");
-                if (titre != null && prix != null) {
-                    try {
-                        JeuVideo j = new JeuVideo(titre, console, Double.parseDouble(prix));
-                        MagasinDB.save(j);
-                        refreshTable();
-                    } catch (Exception ex) {
-                    }
-                }
+                Double prix = promptPrice("Prix:");
+                if (prix == null) return;
+                addArticleSafely(new JeuVideo(titre, console, prix));
             }
         });
 
         btnDVD.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String titre = JOptionPane.showInputDialog("Titre du DVD:");
-                String prix = JOptionPane.showInputDialog("Prix:");
-                if (titre != null && prix != null) {
-                    try {
-                        DVD d = new DVD(titre, Double.parseDouble(prix));
-                        MagasinDB.save(d);
-                        refreshTable();
-                    } catch (Exception ex) {
-                    }
-                }
+                String titre = promptRequiredText("Titre du DVD:");
+                if (titre == null) return;
+                Double prix = promptPrice("Prix:");
+                if (prix == null) return;
+                addArticleSafely(new DVD(titre, prix));
             }
         });
 
@@ -94,8 +79,7 @@ public class Dashboard extends JFrame {
                     if (row == -1) {
                         JOptionPane.showMessageDialog(null, "Sélectionnez une ligne à supprimer !");
                     } else {
-                        String rawTitle = (String) tableStock.getValueAt(row, 1);
-                        String cleanTitle = rawTitle.replace("Titre : ", "").trim();
+                        String cleanTitle = ((String) tableStock.getValueAt(row, 1)).trim();
 
                         int choice = JOptionPane.showConfirmDialog(null, "Supprimer : " + cleanTitle + " ?", "Confirmation", JOptionPane.YES_NO_OPTION);
                         if (choice == JOptionPane.YES_OPTION) {
@@ -155,34 +139,43 @@ public class Dashboard extends JFrame {
         ArrayList<Article> list = MagasinDB.load();
 
         for (Article a : list) {
-            String type = "Article";
-            String details = "-";
+            String type = "Jeu".equals(a.getType()) ? "Jeu Vidéo" : a.getType();
+            model.addRow(new Object[]{type, a.getTitre(), a.getSpecificDetails(), a.getPrix() + " DH"});
+        }
+    }
 
-            if (a instanceof Livre) {
-                type = "Livre";
-                if (a.toString().contains("Auteur")) details = a.toString().split("Auteur :")[1];
-            } else if (a instanceof JeuVideo) {
-                type = "Jeu Vidéo";
-                if (a.toString().contains("Console")) details = a.toString().split("Console :")[1];
-            } else if (a instanceof DVD) {
-                type = "DVD";
+    private void addArticleSafely(Article article) {
+        try {
+            MagasinDB.save(article);
+            refreshTable();
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Entrée invalide", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private String promptRequiredText(String message) {
+        String value = JOptionPane.showInputDialog(message);
+        if (value == null) return null;
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Le champ ne peut pas être vide.", "Entrée invalide", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+        return trimmed;
+    }
+
+    private Double promptPrice(String message) {
+        String value = JOptionPane.showInputDialog(message);
+        if (value == null) return null;
+        try {
+            double price = Double.parseDouble(value.trim());
+            if (price < 0 || Double.isNaN(price) || Double.isInfinite(price)) {
+                throw new NumberFormatException();
             }
-
-            String rawString = a.toString();
-            String cleanTitle = rawString;
-
-            if (rawString.contains("Titre : ")) {
-                int start = rawString.indexOf("Titre : ") + 8;
-                int end = rawString.indexOf(" |", start);
-                if (end == -1) end = rawString.length();
-                cleanTitle = rawString.substring(start, end);
-            } else {
-                cleanTitle = rawString.split("\\|")[0];
-            }
-
-            cleanTitle = cleanTitle.replace("]", "").trim();
-
-            model.addRow(new Object[]{type, cleanTitle, details, a.getPrixLocation() + " DH"});
+            return price;
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Prix invalide. Entrez un nombre >= 0.", "Entrée invalide", JOptionPane.WARNING_MESSAGE);
+            return null;
         }
     }
 
