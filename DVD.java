@@ -11,6 +11,11 @@ public class DVD extends Article {
     }
 
     @Override
+    public String getSpecificDetails() {
+        return "-";
+    }
+
+    @Override
     public String toString() {
         return "[DVD] " + super.toString();
     }

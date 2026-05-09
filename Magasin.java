@@ -89,6 +89,7 @@ public class Magasin {
     }
 
     private static void afficherStock(List<Article> stock) {
+        // L'affichage recharge depuis la DB pour refléter l'état persistant le plus récent.
         stock.clear();
         stock.addAll(MagasinDB.load());
 
