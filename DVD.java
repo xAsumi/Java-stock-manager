@@ -5,6 +5,15 @@ public class DVD extends Article {
         super(titre, prix);
     }
 
+    @Override
+    public String getType() {
+        return "DVD";
+    }
+
+    @Override
+    public String getSpecificDetails() {
+        return "-";
+    }
 
     @Override
     public String toString() {

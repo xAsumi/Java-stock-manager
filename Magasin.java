@@ -1,95 +1,139 @@
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class Magasin {
+    private static final String ADMIN_USER = "admin";
+    private static final String ADMIN_PASS = "3103";
+
+    private Magasin() {
+    }
+
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
 
-        ArrayList<Article> stock = new ArrayList<>();
+        authenticate(scanner);
 
+        int choix;
+        do {
+            afficherMenu();
+            choix = readInt(scanner, "Votre choix : ");
+
+            switch (choix) {
+                case 1 -> addLivre(scanner);
+                case 2 -> addJeuVideo(scanner);
+                case 3 -> addDvd(scanner);
+                case 4 -> afficherStock();
+                case 5 -> System.out.println("Au revoir !");
+                default -> System.out.println("Choix invalide.");
+            }
+        } while (choix != 5);
+
+        scanner.close();
+        System.out.println("Programme terminé.");
+    }
+
+    private static void authenticate(Scanner scanner) {
         System.out.println("=== LOGIN ===");
-        boolean connecte = false;
-        while (!connecte) {
-            System.out.print("User  : ");
-            String user = sc.nextLine();
-            System.out.print("Pass  : ");
-            String pass = sc.nextLine();
+        boolean connected = false;
+        while (!connected) {
+            String user = readNonEmpty(scanner, "User  : ");
+            String pass = readNonEmpty(scanner, "Pass  : ");
 
-            if (user.equals("admin") && pass.equals("3103")) {
-                connecte = true;
-                System.out.println(">> Connexion reussie !");
+            if (ADMIN_USER.equals(user) && ADMIN_PASS.equals(pass)) {
+                connected = true;
+                System.out.println(">> Connexion réussie !");
             } else {
                 System.out.println(">> Erreur d'identifiants");
             }
         }
+    }
 
-        int choix = 0;
-        while (choix != 5) {
-            System.out.println("\n--- La GESTION DE VOTRE MAGASIN ---");
-            System.out.println("1. Ajouter un Livre");
-            System.out.println("2. Ajouter un Jeu Video");
-            System.out.println("3. Ajouter un DVD");
-            System.out.println("4. Afficher le stock");
-            System.out.println("5. Quitter");
-            System.out.print("Votre choix : ");
-            choix = sc.nextInt();
-            sc.nextLine();
+    private static void afficherMenu() {
+        System.out.println("\n--- La GESTION DE VOTRE MAGASIN ---");
+        System.out.println("1. Ajouter un Livre");
+        System.out.println("2. Ajouter un Jeu Video");
+        System.out.println("3. Ajouter un DVD");
+        System.out.println("4. Afficher le stock");
+        System.out.println("5. Quitter");
+    }
 
-            switch (choix) {
-                case 1:
-                    System.out.print("Titre : ");
-                    String tL = sc.nextLine();
-                    System.out.print("Auteur : ");
-                    String aL = sc.nextLine();
-                    System.out.print("Prix : ");
-                    double pL = sc.nextDouble(); sc.nextLine();
+    private static void addLivre(Scanner scanner) {
+        String titre = readNonEmpty(scanner, "Titre : ");
+        String auteur = readNonEmpty(scanner, "Auteur : ");
+        double prix = readPrice(scanner, "Prix : ");
 
-                    Livre livre = new Livre(tL, aL, pL);
-                    stock.add(livre);
-                    MagasinDB.save(livre);
-                    break;
+        Livre livre = new Livre(titre, auteur, prix);
+        MagasinDB.save(livre);
+    }
 
-                case 2:
-                    System.out.print("Titre : ");
-                    String tJ = sc.nextLine();
-                    System.out.print("Console : ");
-                    String cJ = sc.nextLine();
-                    System.out.print("Prix : ");
-                    double pJ = sc.nextDouble(); sc.nextLine();
+    private static void addJeuVideo(Scanner scanner) {
+        String titre = readNonEmpty(scanner, "Titre : ");
+        String console = readNonEmpty(scanner, "Console : ");
+        double prix = readPrice(scanner, "Prix : ");
 
-                    JeuVideo jeu = new JeuVideo(tJ, cJ, pJ);
-                    stock.add(jeu);
-                    MagasinDB.save(jeu);
-                    break;
+        JeuVideo jeu = new JeuVideo(titre, console, prix);
+        MagasinDB.save(jeu);
+    }
 
-                case 3:
-                    System.out.print("Titre : ");
-                    String tD = sc.nextLine();
-                    System.out.print("Prix : ");
-                    double pD = sc.nextDouble(); sc.nextLine();
+    private static void addDvd(Scanner scanner) {
+        String titre = readNonEmpty(scanner, "Titre : ");
+        double prix = readPrice(scanner, "Prix : ");
 
-                    DVD dvd = new DVD(tD, pD);
-                    stock.add(dvd);
-                    MagasinDB.save(dvd);
-                    break;
+        DVD dvd = new DVD(titre, prix);
+        MagasinDB.save(dvd);
+    }
 
-                case 4:
-                    stock = MagasinDB.load();
-                    System.out.println("\n--- CONTENU DU STOCK ---");
-                    for (Article a : stock) {
-                        System.out.println(a);
-                    }
-                    break;
+    private static void afficherStock() {
+        List<Article> stock = MagasinDB.load();
 
-                case 5:
-                    System.out.println("Au revoir !");
-                    break;
+        System.out.println("\n--- CONTENU DU STOCK ---");
+        if (stock.isEmpty()) {
+            System.out.println("Stock vide.");
+            return;
+        }
+        for (Article article : stock) {
+            System.out.println(article);
+        }
+    }
 
-                default:
-                    System.out.println("Choix invalide.");
+    private static String readNonEmpty(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String value = scanner.nextLine();
+            if (value != null) {
+                String trimmed = value.trim();
+                if (!trimmed.isEmpty()) {
+                    return trimmed;
+                }
+            }
+            System.out.println("Entrée invalide : valeur vide.");
+        }
+    }
+
+    private static int readInt(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String value = scanner.nextLine();
+            try {
+                return Integer.parseInt(value.trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Veuillez entrer un entier valide.");
             }
         }
-        sc.close();
-        System.out.println("Programme terminé.");
+    }
+
+    private static double readPrice(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String value = scanner.nextLine();
+            try {
+                double parsed = Double.parseDouble(value.trim());
+                if (parsed >= 0 && !Double.isInfinite(parsed) && !Double.isNaN(parsed)) {
+                    return parsed;
+                }
+            } catch (NumberFormatException e) {
+            }
+            System.out.println("Prix invalide. Entrez un nombre >= 0.");
+        }
     }
 }
