@@ -17,6 +17,11 @@ public class JeuVideo extends Article {
     }
 
     @Override
+    public String getDisplayType() {
+        return "Jeu Vidéo";
+    }
+
+    @Override
     public String getSpecificDetails() {
         return console;
     }

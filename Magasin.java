@@ -11,7 +11,6 @@ public class Magasin {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        List<Article> stock = new ArrayList<>();
 
         authenticate(scanner);
 
@@ -21,10 +20,10 @@ public class Magasin {
             choix = readInt(scanner, "Votre choix : ");
 
             switch (choix) {
-                case 1 -> addLivre(scanner, stock);
-                case 2 -> addJeuVideo(scanner, stock);
-                case 3 -> addDvd(scanner, stock);
-                case 4 -> afficherStock(stock);
+                case 1 -> addLivre(scanner);
+                case 2 -> addJeuVideo(scanner);
+                case 3 -> addDvd(scanner);
+                case 4 -> afficherStock();
                 case 5 -> System.out.println("Au revoir !");
                 default -> System.out.println("Choix invalide.");
             }
@@ -59,39 +58,34 @@ public class Magasin {
         System.out.println("5. Quitter");
     }
 
-    private static void addLivre(Scanner scanner, List<Article> stock) {
+    private static void addLivre(Scanner scanner) {
         String titre = readNonEmpty(scanner, "Titre : ");
         String auteur = readNonEmpty(scanner, "Auteur : ");
         double prix = readPrice(scanner, "Prix : ");
 
         Livre livre = new Livre(titre, auteur, prix);
-        stock.add(livre);
         MagasinDB.save(livre);
     }
 
-    private static void addJeuVideo(Scanner scanner, List<Article> stock) {
+    private static void addJeuVideo(Scanner scanner) {
         String titre = readNonEmpty(scanner, "Titre : ");
         String console = readNonEmpty(scanner, "Console : ");
         double prix = readPrice(scanner, "Prix : ");
 
         JeuVideo jeu = new JeuVideo(titre, console, prix);
-        stock.add(jeu);
         MagasinDB.save(jeu);
     }
 
-    private static void addDvd(Scanner scanner, List<Article> stock) {
+    private static void addDvd(Scanner scanner) {
         String titre = readNonEmpty(scanner, "Titre : ");
         double prix = readPrice(scanner, "Prix : ");
 
         DVD dvd = new DVD(titre, prix);
-        stock.add(dvd);
         MagasinDB.save(dvd);
     }
 
-    private static void afficherStock(List<Article> stock) {
-        // L'affichage recharge depuis la DB pour refléter l'état persistant le plus récent.
-        stock.clear();
-        stock.addAll(MagasinDB.load());
+    private static void afficherStock() {
+        List<Article> stock = new ArrayList<>(MagasinDB.load());
 
         System.out.println("\n--- CONTENU DU STOCK ---");
         if (stock.isEmpty()) {

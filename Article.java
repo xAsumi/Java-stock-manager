@@ -17,11 +17,6 @@ public abstract class Article implements Serializable {
         this.prix = prix;
     }
 
-
-    public double getPrixLocation() {
-        return this.prix;
-    }
-
     public String getTitre() {
         return titre;
     }
@@ -31,6 +26,10 @@ public abstract class Article implements Serializable {
     }
 
     public abstract String getType();
+
+    public String getDisplayType() {
+        return getType();
+    }
 
     public String getSpecificDetails() {
         return "-";

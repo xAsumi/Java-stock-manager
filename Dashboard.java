@@ -139,8 +139,7 @@ public class Dashboard extends JFrame {
         ArrayList<Article> list = MagasinDB.load();
 
         for (Article a : list) {
-            String type = "Jeu".equals(a.getType()) ? "Jeu Vidéo" : a.getType();
-            model.addRow(new Object[]{type, a.getTitre(), a.getSpecificDetails(), a.getPrix() + " DH"});
+            model.addRow(new Object[]{a.getDisplayType(), a.getTitre(), a.getSpecificDetails(), a.getPrix() + " DH"});
         }
     }
 
