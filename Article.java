@@ -25,6 +25,9 @@ public abstract class Article implements Serializable {
         return prix;
     }
 
+    /**
+     * @deprecated Utiliser {@link #getPrix()}.
+     */
     @Deprecated
     public double getPrixLocation() {
         return getPrix();

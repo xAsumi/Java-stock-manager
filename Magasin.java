@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -42,7 +41,7 @@ public class Magasin {
 
             if (ADMIN_USER.equals(user) && ADMIN_PASS.equals(pass)) {
                 connected = true;
-                System.out.println(">> Connexion reussie !");
+                System.out.println(">> Connexion réussie !");
             } else {
                 System.out.println(">> Erreur d'identifiants");
             }
@@ -85,7 +84,7 @@ public class Magasin {
     }
 
     private static void afficherStock() {
-        List<Article> stock = new ArrayList<>(MagasinDB.load());
+        List<Article> stock = MagasinDB.load();
 
         System.out.println("\n--- CONTENU DU STOCK ---");
         if (stock.isEmpty()) {
